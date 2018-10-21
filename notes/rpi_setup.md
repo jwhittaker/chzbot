@@ -6,9 +6,7 @@ Setup documentation performed with the following:
 
 **Hardware Model:** Zero W V1.1
 
-![Raspberry Pi Zero W](images/raspberrypi_zero.svg)
-
-[vector source](https://openclipart.org/user-detail/madnerd)
+![Raspberry Pi Zero W](images/rpi_zero_w.jpg)
 
 **Linux Kernel:** `Linux raspberrypi 4.14.70+ #1144 Tue Sep 18 17:20:50 BST 2018 armv6l GNU/Linux`
 
