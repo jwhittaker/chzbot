@@ -6,7 +6,9 @@ Setup documentation performed with the following:
 
 **Hardware Model:** Zero W V1.1
 
-`-------- PHOTO OR SCAN OF BOARD ----------`
+![Raspberry Pi Zero W](images/raspberrypi_zero.svg)
+
+[vector source](https://openclipart.org/user-detail/madnerd)
 
 **Linux Kernel:** `Linux raspberrypi 4.14.70+ #1144 Tue Sep 18 17:20:50 BST 2018 armv6l GNU/Linux`
 
@@ -137,6 +139,18 @@ If you do not have this adapter, then there is also composite analog TV out on t
 `-------- PHOTO OF TV PIN ----------`
 
 `-------- Write-up on /boot dir TV OUT ENABLE ----------`
+
+The following can be added to the `boot.txt` file to enable monochrome composite NTSC video out.
+
+[Boot Config Source](https://www.raspberrypi.org/documentation/configuration/config-txt/video.md)
+
+```
+# Enable NTSC
+sdtv_mode=0
+sdtv_aspect=1
+sdtv_disable_colourburst=1
+```
+
 
 ### Connect Power
 
@@ -336,8 +350,7 @@ Should that fail, and you're networked, it may be that `/etc/apt/sources` stupid
 
 # Install PWM Control
 
-Todo
-
+## GPIO Setup
 
 ```
 sudo gpio_alt -p 13 -f 0
@@ -349,22 +362,55 @@ Set pin 18 to alternative-function 5
 
 # PowerBlock
 
+ATTiny85 microcontroller as a power controller for the RPi.
+
 https://github.com/petrockblog/PowerBlock
 
-## Rpi installer
+https://github.com/vpanarello/RpiPowerController
 
-``
+Set the board as "ATtiny25/45/85", processor as ATtiny85
+Clock as 1MHz and programmer as "Arduino as ISP".
+
+## Install
+
+`wget -O - https://raw.githubusercontent.com/petrockblog/PowerBlock/master/install.sh | sudo bash`
+
+Additional packages installed totals **151 MB**
 
 ```
-mse@mousedroid:~/servo_test $ cat /var/log/powerblock.log
-2018-10-12 20:10:58.662 INFO  [13402] [main@70] Starting PowerBlock driver, version 1.5.0
-2018-10-12 20:10:58.665 INFO  [13402] [PowerBlockConfiguration::initialize@57] Shutdown is ACTIVATED
-2018-10-12 20:10:58.665 INFO  [13402] [PowerBlockConfiguration::initialize@77] Shutdown Pin is 18
-2018-10-12 20:10:58.665 INFO  [13402] [PowerBlockConfiguration::initialize@78] Status Pin is 17
-2018-10-12 20:10:58.667 INFO  [13402] [PowerSwitch::setPowerSignal@75] Setting RPi status signal to HIGH
+  build-essential
+  cmake
+  cmake-data
+  doxygen
+  g++-4.9
+  git
+  git-man
+  libarchive13
+  libclang1-3.9
+  liberror-perl
+  libjsoncpp1
+  libllvm3.9
+  liblzo2-2
+  libstdc++-4.9-dev
+  libuv1
+```
 
+**statuspin:** Raspberry BCM pin used for status signaling (default: 17) connects to S2 on PowerBlock
+**shutdownpin:** Raspberry BCM pin used for shutdown signaling (default: 18) connects to S1 on Powerblock
 
-2018-10-12 20:38:12.486 INFO  [13402] [main@85] Exiting PowerBlock driver.
+PowerBlock driver logging `/var/log/powerblock.log`
+When the driver observes a shutdown signal from the PowerBlock, a shutdown Bash script is called.
+You can find and edit it at `/etc/powerblockswitchoff.sh`
+
+### Need to change the pinout to not stomp on the HW PWM
+sudo sed -i 's/"shutdownpin": 18/"shutdownpin": 27/g' /etc/powerblockconfig.cfg
+
+### Need to change the pinout to not stomp on the HW PWM
+sudo sed -i 's/"shutdownpin": 18/"shutdownpin": 27/g' /etc/powerblockconfig.cfg
+
+### dmesg
+
+```
 2018-10-12 20:38:30.711 INFO  [282] [main@70] Starting PowerBlock driver, version 1.5.0
 2018-10-12 20:38:30.731 INFO  [282] [PowerBlockConfiguration::initialize@57] Shutdown is ACTIVATED
 2018-10-12 20:38:30.732 INFO  [282] [PowerBlockConfiguration::initialize@77] Shutdown Pin is 27
@@ -372,10 +418,6 @@ mse@mousedroid:~/servo_test $ cat /var/log/powerblock.log
 2018-10-12 20:38:30.745 INFO  [282] [PowerSwitch::setPowerSignal@75] Setting RPi status signal to HIGH
 ```
 
-```
-statuspin: Raspberry BCM pin used for status signaling (default: 17) connects to S2 on PowerBlock
-shutdownpin: Raspberry BCM pin used for shutdown signaling (default: 18) connects to S1 on Powerblock
-```
 ## ATTiny85 Code
 
 `https://github.com/vpanarello/RpiPowerController/blob/master/sketch_nov16a.ino`
