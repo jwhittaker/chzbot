@@ -145,9 +145,9 @@ Windows, Linux, and Mac should all be able to run `arp -a` in the terminal or cm
 
 ```
 ? (172.17.0.2) at 02:42:ac:11:00:02 [ether] on docker0
-? (104.152.20.163) at 58:00:bb:a4:c4:30 [ether] on eth2
-? (104.152.20.162) at 38:4f:49:9f:2a:b0 [ether] on eth2
-? (104.152.20.161) at 50:87:89:a2:5a:59 [ether] on eth2
+? (172.52.45.163) at 58:00:bb:a4:c4:30 [ether] on eth2
+? (172.52.45.162) at 38:4f:49:9f:2a:b0 [ether] on eth2
+? (172.52.45.161) at 50:87:89:a2:5a:59 [ether] on eth2
 ```
 
 **Mac OS X Placeholder**
