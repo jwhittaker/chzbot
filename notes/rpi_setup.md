@@ -1,8 +1,6 @@
 # Setting Up A Raspberry Pi
 
-**TODO: Create cheatsheet of steps at the end**
-
-Setup documentation performed with the following:
+This demo was performed with the following hardware and kernel:
 
 **Hardware Model:** Zero W V1.1
 
@@ -25,22 +23,53 @@ Release date: 2018-06-27
 Kernel version: 4.14.50+
 ```
 
-Lite was chosen because we do not interact through a UI or need all of the extra software taking memory and CPU cycles.
+Raspbian Lite was chosen because we do not need a UI to interact through and it would be extra software taking memory and CPU cycles (and thus decrease battery runtimes).
 
-Download the `.zip` and unzip the `.img`.
+Download the `.zip` and unzip the Raspbian `.img`.
 
-Install [etcher](https://etcher.io/) to simply flash the `.img` to the the card. If it is the only card and flash drive inserted, etcher will automatically choose it.
+There are many alternatives, but we install [etcher](https://etcher.io/) to flash the `.img` to the the card. Etcher runs on most operating systems and is simple to use. If it is the only card and flash drive inserted, etcher will automatically choose it.
 
 ![Flash using etcher](images/etcher_flash.png)
 
-Mac: try `diskutil list`
+### Alternatives
 
-Mac and Linux do not need extra software, use: `sudo dd if=~/2018-06-27-raspbian-stretch-lite.img of=/dev/disk1`
+Linux and Mac OS X do not need extra software to create a bootable SD card from an `.img`
 
+#### Find which disk device is the SD card.
+
+**Mac OS X**
+
+```
+diskutil list
+```
+
+**Debian-based Linux**
+
+There are many ways to find a storage device. Keep these commands handy for later when it comes time to mount the SD card boot filesystem on your workstation.
+
+```
+lsblk
+sudo fdisk -l
+blkid
+ls -l /dev/sd*
+sudo dmesg | tail
+```
+
+It might look something like `/dev/sdc`. Numbers at the end indicate filesystems, not the device itself. The `.img` file includes file system information in it, so a `dd` command is pointed at the device.
+
+#### Write the image to the SD card
+
+If `/dev/disk2` (Mac) happens to be your SD card device and the image was saved in the Downloads dir or your home, then you can use this `dd` command to write it there.
+
+**Be wary of pasting sudo AND dd commands you see on the internet! You can potentially ruin your workstation.**
+
+```
+sudo dd if=~/Downloads/2018-06-27-raspbian-stretch-lite.img of=/dev/disk2
+```
 
 ## Headless Shortcuts
 
-Again, as this is the Lite version of Raspbian, it would be more convenient to have ssh access from the beginning. This keeps you from having to initially buy a bunch of dongles or be hunched over a crummy spare keyboard and monitor typing stuff in with no ability to paste from this procedure. This procedure will also instruct how to use the mouse less in Windows.
+It would be more convenient to have `ssh` access from the beginning. This keeps you from having to initially buy a bunch of dongles or be hunched over a spare keyboard and monitor with no convenient way to paste commands from this procedure.
 
 ### auto-enable ssh server
 
@@ -48,7 +77,15 @@ Placing an empty file named `ssh` on the `/boot` partition (top level) of the SD
 
 #### Linux and Mac
 
-Open terminal and `cd` to the directory where the volume is mounted. (One example would be `/media/sd/boot`).
+After `dd` is finished, the `/boot` filesystem on the SD card will need to be mounted. If your Linux distro did not do that automatically, even after re-insertion of the SD card, then proceed with the next steps.
+
+First create a mount point. `sudo mkdir -p /mnt/sdboot`
+
+Mount the file system to the newly created dir. If the device was `/dev/sdc` and the boot file system is `sdc1`, then `sudo mount /dev/sdc1 /mnt/sdboot` will mount it there.
+
+Open terminal and `cd` to the directory where the volume is mounted. From the Linux example that would be `cd /mnt/sdboot`
+
+Mac OS X might be `cd /media/sd/boot` but it should show an icon on the desktop.
 
 `touch ssh` to place the file there.
 
@@ -62,9 +99,9 @@ Check the drive letter of the SD card in computer.
 
 Open command prompt with `Win+R`, type `cmd`, press enter.
 
-If the SD card drive letter is `D` then type `d:` to jump there.
+If the SD card drive letter is `D` then type `d:` to jump there. My example is `i:`
 
-Input `touch>ssh`. There may be an error message but it works. Type `dir` to check.
+Input `touch>ssh`. There may be an error message but it works. Type `dir` to check. See the screenshot.
 
 ![touch ssh file in Windows](images/ssh_file.png)
 
@@ -76,7 +113,7 @@ Wifi may be setup with the `wpa_supplicant.conf` text file file in the same dire
 
 #### Contents of the config file
 
-Change the `ssid` and `psk` (passkey) to your own access point or router. Country is the two-letter code. There are no typos, this is the actual file contents verified to work:
+Change the `ssid` and `psk` (passkey) to your own access point while keeping the double quotes `"` wrapped around them. `WPA-PSK` is usually what most are using but it has to match your wifi network configuration to work. Country is the two-letter code. This is the actual file contents verified to work:
 
 ```
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -96,39 +133,62 @@ A USB [NIC](https://en.wikipedia.org/wiki/Network_interface_controller) that's c
 
 `-------- PHOTO USB NIC ----------`
 
+`-------- DEVICE INFO TERMINAL DUMP OF MY NIC ---------`
+
 [ARP](https://en.wikipedia.org/wiki/Address_Resolution_Protocol) your network beforehand, so you can compare the difference and see what IP gets added after the Pi has booted up. Or you can log into your router and look at the DHCP client leases table.
 
-Windows, Linux, and Mac should all be able to run `arp -a` in the terminal or cmd. Do that now and keep the window open or copy/screenshot it.
+Windows, Linux, and Mac should all be able to run `arp -a` in the terminal or cmd. Do that now and keep the window open or copy/screenshot to a note.
 
 `-------- SCREENSHOT: mac/linux arp -a result ----------`
 
-## Attach Peripherals
+**Linux Placeholder**
 
-Skip this section if you're following along with headless ssh.
+```
+? (172.17.0.2) at 02:42:ac:11:00:02 [ether] on docker0
+? (104.152.20.163) at 58:00:bb:a4:c4:30 [ether] on eth2
+? (104.152.20.162) at 38:4f:49:9f:2a:b0 [ether] on eth2
+? (104.152.20.161) at 50:87:89:a2:5a:59 [ether] on eth2
+```
+
+**Mac OS X Placeholder**
+
+```
+? (192.168.0.1) at b0:4e:26:55:48:66 on en9 ifscope [ethernet]
+? (192.168.0.131) at (incomplete) on en9 ifscope [ethernet]
+? (192.168.0.255) at ff:ff:ff:ff:ff:ff on en9 ifscope [ethernet]
+? (224.0.0.251) at 1:0:5e:0:0:fb on en9 ifscope permanent [ethernet]
+? (239.255.255.250) at 1:0:5e:7f:ff:fa on en9 ifscope permanent [ethernet]
+```
+
+## Attach Peripherals (if not using ssh)
+
+**Skip this section if you're following along with headless ssh.**
 
 Power is connected last.
 
 ### Adding USB and Network
 
-#### OTG Cable
+#### Option 1: OTG Cable
 
-To break out the USB ports into something usable on the Pi Zero, use something like an [OTG cable](https://en.wikipedia.org/wiki/USB_On-The-Go#OTG_micro_cables), which is just the standard for *Micro USB Male-B* to *USB Female-A*. Then to that a  USB 2.0 hub is connected. An externally powered hub is even better--or may even be required if your devices are high-powered (flash drives, tv tuners, wifi). A USB 3.0 hub will not add any performance benefit. The Pi USB Host Controller is 2.0.
+To break out the USB ports into something usable on the Pi Zero, use something like an [OTG cable](https://en.wikipedia.org/wiki/USB_On-The-Go#OTG_micro_cables), which is just the standard for *Micro USB Male-B* to *USB Female-A*. The host/client relationship does not matter to the cable. A regular USB 2.0 hub can be connected providing USB *Female-A* ports for peripherals (which almost all are *Male-A*). An externally powered hub is even better--or may even be required if your devices are high-powered (flash drives, tv tuners, wifi). A USB 3.0 hub has no performance benefit as all Pi USB Host Controllers are 2.0.
 
-`-------- PHOTO OTG CABLE ----------`
+`-------- PHOTO OTG CABLE & 2 MICRO PORTS SHOWING HUB VS POWER PORT ----------`
 
-`-------- PHOTO USB HUB ----------`
+#### Option 2: Jumper a USB PCI Bracket
 
-#### Or jumper a USB PCI bracket
+*If you lack an OTG cable* but have spare parts from building computers, you can take a dual USB PCI bracket and jump the pins together using some solid wire or paper clips. Take the [0.1" female USB header](http://pinoutguide.com/Motherboard/usb_2_1_header_pinout.shtml) and connect each pair of the five rows pins together. This links both of the *Female-A* ports to each other. One port is for a *Micro Male-A* cable to let you connect to the Pi Zero, and the other for the *Male-A* end of a USB hub. I have done this myself and it works fine.
 
-*If you lack an OTG cable*, there is another method for hacking one together. If you have spare parts from building computers, you can take a dual USB PCI bracket and jump the pins together using some solid wire or paper clips. Take the [0.1" female USB header](http://pinoutguide.com/Motherboard/usb_2_1_header_pinout.shtml) and connect each pair of the five rows pins together. This links both of the *Female-A* ports to each other. One port is for a micro B cable to let you connect to the Pi Zero, and the other for the male-A USB hub. I have done this myself and it works fine.
+`------------ PHOTO OF PCI BRACK JUMPER RIG -------------`
 
-#### Or solder a splice
+#### Option 3: Solder a Spliced Micro Cable
 
-Sacrifice a spare micro USB cable to connect into the Zero and splice its other end to your USB hub. This needs to be done somewhat neatly or it may not work. You are breaking the shielding a normal cable would have.
+Sacrifice a spare micro USB cable to cut open and splice its *Male-A* end into your USB hub. This needs to be done somewhat neatly or it may not work. You are breaking the shielding a normal cable would have.
+
+`------------- 4-QUAD PHOTO OF SPLICING A WIRE INTO A USB HUB ---------------`
 
 ### Video Output
 
-You will need a *male mini-HDMI* (not micro) to *HDMI (male or female)* adapter. A female HDMI adapter allows you to then use a standard HDMI cable of a preferred length. Adding more interconnects in between the HDMI signal has a chance of not working. Do not daisy chain too many.
+You will need a *male mini-HDMI* (Not micro) to *HDMI (either male or female)* adapter. A *female HDMI* adapter might be more convenient. It allows you to use a standard HDMI cable of a preferred length. Adding more interconnects in between the HDMI signal has a chance of not working. Do not daisy chain too many.
 
 `-------- PHOTO HDMI ADAPTER ----------`
 
@@ -149,7 +209,6 @@ sdtv_aspect=1
 sdtv_disable_colourburst=1
 ```
 
-
 ### Connect Power
 
 An 800 - 2000 mA, 5.0 - 5.2V charger is the ideal choice for powering the setup. A computer USB port is limited to 500mA--it *works* for testing, but results may vary. As the Raspberry Pi has no power switch, power is connected last.
@@ -163,11 +222,11 @@ You only need an SD card if doing this headless over pre-configured wireless!
 - USB keyboard connected
 - USB NIC connected and ethernet connected to a network switch
 
-Now connect the power.
+It's ready for power on!
 
 ## Login to the Pi
 
-Upon first boot up it will resize the file system to fit the SD card then reboot for changes to take effect.
+Upon first boot up it will *resize* the file system to occupy the rest of the SD card then reboot.
 
 Wait a couple of minutes after first power on. Run `arp -a` again on your workstation computer to see what new IP has shown up. That will probably be the Pi just joining your network with a DHCP lease.
 
@@ -175,11 +234,11 @@ Wait a couple of minutes after first power on. Run `arp -a` again on your workst
 
 Here I left the window open to run arp again after the Pi booted.
 
-Or check your router web UI. Because I did both ethernet and Wifi to write this, my router shows `raspberrypi` host IPs for both LAN and Wifi in the client table.
+Or check your router's web UI config. Because I did both ethernet and Wifi to write this, my router shows `raspberrypi` host IPs for both LAN and Wifi in the client table.
 
-There are tools like `nmap` and `Angry IP Scanner` to scan your subnet. But at this point, it is probably the Pi that's unable to connect.
+There are also tools like `nmap` and `Angry IP Scanner` to scan your subnet. But at this point if you're not seeing any new IPs then it is probably the Pi that's unable to connect. You might need to double check `boot.txt` with your Wifi settings or follow the steps of connecting a keyboard and monitor (section **Attach Peripherals**).
 
-### Still need the IP?
+### Still No IP?
 
 With all of the peripherals connected, physically at the Pi login prompt you will have:
 
@@ -193,17 +252,17 @@ Check and see if you have an IP address
 
 `-------- SCREENSHOT: RPI IFCONFIG ----------`
 
-If you do not see a `192.168.0.x` something then worry about troubleshooting this a little later and skip the following connection steps.
+If you do not see a `192.168.0.x` or a local IP assigned then worry about troubleshooting this a little later on and just skip the following connection steps. Network connectivity is going to be used for getting updates and installing additional software. Steps to do this offline manually are out of scope for now.
 
 ### SSH Connection
 
-Windows will need a terminal program which supports ssh, such as [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html).
+**Windows** will need a terminal program which supports ssh, such as [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html).
 
-Mac & Linux will have ssh already available from the terminal.
+**Mac & Linux** should have ssh already available from the terminal. If not, install it. Or it is time to get a better Linux distro, such as (Mint)[https://linuxmint.com/download.php]. `sudo apt-get install ssh`
 
 #### Linux and Mac Terminal
 
-`ssh pi@192.168.0.6` or whatever the IP turned out to be.
+`ssh pi@192.168.0.6` or whatever your IP turned out to be.
 
 `-------- SCREENSHOT: OPEN TERMINAL ON MAC OR UBUNTU ----------`
 
@@ -229,12 +288,13 @@ Press `Alt+O` to *open* the connection
 
 **Password:** `raspberry`
 
-
 ## Customize the Environment
 
-The guides found on google searches will say to traditionally use `sudo raspi-config` and then proceed to explain how to use each menu option. I prefer using a sequence that can be copy and pasted in one move without interactivity. If we know what we want out of the computer, then let's tell it directly to go there. This will be demonstration of each part.
+The guides found on google searches will say to traditionally use `sudo raspi-config` and then proceed to explain how to use each menu option. I prefer using a sequence that can be copy and pasted in one move without menus and interacte prompts. If we know what we want out of the computer, then let's tell it directly to go there.
 
 ### Basic Commandline Familiarity
+
+Be careful when pasting and running `sudo` commands from the internet. Also be careful about running foreign scripts.
 
 Test sudo: `sudo echo hello` and get the password prompt. The password is `raspberry` (default from the image). Future `sudo` commands will not prompt for now until a time elapses. **Sudo** is *super user do*, or run things as a user with unlimited power (`root` user). This is for security and safety reasons. It is very easy to "sudo-ruin-everything" on even the fanciest Linux computer. `dd` and `rm` are some of those commands. You can always reflash your SD card and start over.
 
@@ -252,7 +312,7 @@ Pasting text into the terminal from your workstation's clipboard depends on the 
 - Linux might be `Ctrl+Shift+V` to paste, `Ctrl+Shift+C` to copy.
 - Windows using PuTTY is a mouse `right-click` to paste, and selecting with the mouse automatically copies.
 
-New lines get interpreted as a command input, so when pasting scripts from this, the last line will not be sent through until you press enter for it. Spaces are separators 
+New lines get interpreted as a command input, so when pasting scripts from this, the last line will not be sent through until you press enter for it. Spaces are separators for argument lists to modify the default actions of a program.
 
 ### Locale Change
 
@@ -273,13 +333,13 @@ sudo update-locale en_US.UTF-8
 
 ### Keyboard Layout Change
 
-US 104 key. If you're not logged in through ssh, some of the symbols you input will be wrong. ssh can send the keyboard layout for its connected terminal so you will not see this.
+US 104 or 105 key. Some of the symbols you input will be wrong (pipe `|` for instance) until you change the keyboard. `ssh` can send the keyboard layout for its connected terminal so you may not notice.
 
 Paste this script and press enter
 
 ```
 KYBD="/etc/default/keyboard"
-sudo sed -i 's/XKBMODEL=.*/XKBMODEL="pc104"/g' "$KYBD" && \
+sudo sed -i 's/XKBMODEL=.*/XKBMODEL="pc105"/g' "$KYBD" && \
 sudo sed -i 's/XKBLAYOUT=.*/XKBLAYOUT="us"/g' "$KYBD" && \
 sudo sed -i 's/BACKSPACE=.*/BACKSPACE="guess"/g' "$KYBD" && \
 sudo sed -i 's/XKBOPTIONS=.*/XKBOPTIONS=""/g' "$KYBD"
@@ -327,11 +387,11 @@ If you are not using wifi and do not intend for the Pi to go back on the network
 sudo userdel pi
 ```
 
-Bots and crackers running scripts that search around for default Raspberry Pi's will not simply gain access if there are security holes in your network. There are other easy changes like this to defend against these malicious things. An example would be to change the ssh port from 22 to something above 1024.
+Bots and crackers running scripts that search around for default Raspberry Pi's will no longer simply gain access (if there are security holes in your network). There are other easy changes like this to defend against these malicious things. An example would be to change the `ssh` port from 22 to something above 1024. That proceedure is out of scope for this write up.
 
 ### Remove MotD
 
-I like to clean up the message of the day for login.
+I like to clean up the message of the day for login. You can look up how to add ASCII art or something here.
 
 ```
 sudo rm /etc/motd
@@ -345,6 +405,10 @@ The Pi will need to be on the network to reach out for updates.
 `sudo apt update -qq && sudo apt-get upgrade -y`
 
 Should that fail, and you're networked, it may be that `/etc/apt/sources` stupidly has the CDROM as the only repo source. I do not think this will happen with the Raspbian images. Remove the `-qq` switches (quiet) for more output to help troubleshoot.
+
+`------------------ End of general setup ------------------`
+
+Scratch notes that need to be sorted into their own documents:
 
 # Install PWM Control
 
@@ -499,11 +563,11 @@ Here is an image backing up the microSD card the RPI was using. These are 16GB U
 What do you really need?
 
 - $10 Pi Zero W
-- OTG Cable
-- $8 8 or 16GB UHS-1 or Class 10 uSD (usually they come with full size adapters)
+- $3 OTG Cable
+- $8 `8 GB` or `16 GB` UHS-1 or Class 10 μSD (usually they come with full size adapters)
 - Micro USB cell charger (check a thrift store if you do not have one laying around)
-- Double row of 0.1" header pins maybe
-- SD card reader if you don't have any computers with one (it's 2018, how could you!)
+- Double row of 0.1" header pins maybe (If not a Zero WH model)
+- SD card reader if you don't have any computers with one (it's 2018--how could you!)
 
 You can 3d print a case or get creative.
 
@@ -512,4 +576,4 @@ You can 3d print a case or get creative.
 
 `tmux` is only **561 kB**.
 
-running the powercontrol script installs git and stuff.
+running the powercontrol script installs git and stuff. somewhere is a clip file to show the additional space.
