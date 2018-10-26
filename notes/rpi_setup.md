@@ -131,7 +131,7 @@ network={
 
 A USB [NIC](https://en.wikipedia.org/wiki/Network_interface_controller) that's confirmed compatible with Linux should auto-setup with [DHCP](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol) and be on the network. I did not have to do anything extra for this to succeed.
 
-`-------- PHOTO USB NIC ----------`
+![USB NIC](images/usbnic.jpg)
 
 `-------- DEVICE INFO TERMINAL DUMP OF MY NIC ---------`
 
@@ -172,31 +172,39 @@ Power is connected last.
 
 To break out the USB ports into something usable on the Pi Zero, use something like an [OTG cable](https://en.wikipedia.org/wiki/USB_On-The-Go#OTG_micro_cables), which is just the standard for *Micro USB Male-B* to *USB Female-A*. The host/client relationship does not matter to the cable. A regular USB 2.0 hub can be connected providing USB *Female-A* ports for peripherals (which almost all are *Male-A*). An externally powered hub is even better--or may even be required if your devices are high-powered (flash drives, tv tuners, wifi). A USB 3.0 hub has no performance benefit as all Pi USB Host Controllers are 2.0.
 
-`-------- PHOTO OTG CABLE & 2 MICRO PORTS SHOWING HUB VS POWER PORT ----------`
+![OTG Adapter Cable](images/otgcable.jpg)
 
 #### Option 2: Jumper a USB PCI Bracket
 
 *If you lack an OTG cable* but have spare parts from building computers, you can take a dual USB PCI bracket and jump the pins together using some solid wire or paper clips. Take the [0.1" female USB header](http://pinoutguide.com/Motherboard/usb_2_1_header_pinout.shtml) and connect each pair of the five rows pins together. This links both of the *Female-A* ports to each other. One port is for a *Micro Male-A* cable to let you connect to the Pi Zero, and the other for the *Male-A* end of a USB hub. I have done this myself and it works fine.
 
-`------------ PHOTO OF PCI BRACK JUMPER RIG -------------`
+![Bracket Jumpered](images/bracket_jumper.jpg)
 
 #### Option 3: Solder a Spliced Micro Cable
 
 Sacrifice a spare micro USB cable to cut open and splice its *Male-A* end into your USB hub. This needs to be done somewhat neatly or it may not work. You are breaking the shielding a normal cable would have.
 
-`------------- 4-QUAD PHOTO OF SPLICING A WIRE INTO A USB HUB ---------------`
+Not all USB cables are alike. In the top left panel you see the right cable only has power and ground.
+
+It might be easier than splicing cables, if you desolder the old cable or port, and solder the clipped cable directly on the hub like shown.
+
+The modern adapters are fairly cheap and this takes some work, but you're recycling old components that maybe have not been used for years and even get thrown out today. 
+
+![Building a micro USB Hub](images/hub_build.jpg)
 
 ### Video Output
 
+#### HDMI
+
 You will need a *male mini-HDMI* (Not micro) to *HDMI (either male or female)* adapter. A *female HDMI* adapter might be more convenient. It allows you to use a standard HDMI cable of a preferred length. Adding more interconnects in between the HDMI signal has a chance of not working. Do not daisy chain too many.
 
-`-------- PHOTO HDMI ADAPTER ----------`
+![Mini HDMI to Female HDMI Adapter](images/mini_hdmi_adapter.jpg)
 
-If you do not have this adapter, then there is also composite analog TV out on the Pi Zero. A two pin header can be soldered there to wire up a yellow RCA jack. I might cover that later. Video output is not necessary with the headless **ssh** setup mentioned earlier.
+#### Analog Composite
 
-`-------- PHOTO OF TV PIN ----------`
+If you do not have this adapter, then there is also composite analog TV out on the Pi Zero. A two pin header can be soldered there to wire up a yellow RCA jack. Video output is not necessary with the headless **ssh** setup mentioned earlier.
 
-`-------- Write-up on /boot dir TV OUT ENABLE ----------`
+There is a tutorial for this which can be found on [modmypi.com](https://www.modmypi.com/blog/how-to-add-an-rca-tv-connector-to-a-raspberry-pi-zero)
 
 The following can be added to the `boot.txt` file to enable monochrome composite NTSC video out.
 
@@ -215,7 +223,7 @@ An 800 - 2000 mA, 5.0 - 5.2V charger is the ideal choice for powering the setup.
 
 #### Peripheral Checklist
 
-You only need an SD card if doing this headless over pre-configured wireless!
+You only need the SD card if you are doing this headless over pre-configured wireless!
 
 - microSD card flashed and inserted
 - USB adapted
@@ -228,11 +236,11 @@ It's ready for power on!
 
 Upon first boot up it will *resize* the file system to occupy the rest of the SD card then reboot.
 
-Wait a couple of minutes after first power on. Run `arp -a` again on your workstation computer to see what new IP has shown up. That will probably be the Pi just joining your network with a DHCP lease.
+Wait a couple of minutes after first power on. Run `arp -a` again on your workstation computer to see what new IP has shown up. That will likely be the Pi just joining your network with its DHCP lease.
 
 ![ARP result before and after](images/arp.png)
 
-Here I left the window open to run arp again after the Pi booted.
+I left the window open to run arp again after the Pi booted.
 
 Or check your router's web UI config. Because I did both ethernet and Wifi to write this, my router shows `raspberrypi` host IPs for both LAN and Wifi in the client table.
 
@@ -246,13 +254,23 @@ With all of the peripherals connected, physically at the Pi login prompt you wil
 
 **Password:** `raspberry`
 
-Check and see if you have an IP address
+Check and see if you have an IP address. Here is an example with ethernet showing the network interface has an IP address.
 
 `ifconfig`
 
-`-------- SCREENSHOT: RPI IFCONFIG ----------`
+```
+$ ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.1.121  netmask 255.255.255.0  broadcast 192.168.1.255
+        inet6 fe80::92aa:2b5d:fd0b:7deb  prefixlen 64  scopeid 0x20<link>
+        ether b8:27:eb:23:9e:7b  txqueuelen 1000  (Ethernet)
+        RX packets 120666  bytes 71154276 (67.8 MiB)
+        RX errors 0  dropped 1  overruns 0  frame 0
+        TX packets 7729  bytes 879351 (858.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
 
-If you do not see a `192.168.0.x` or a local IP assigned then worry about troubleshooting this a little later on and just skip the following connection steps. Network connectivity is going to be used for getting updates and installing additional software. Steps to do this offline manually are out of scope for now.
+If you do not see a `192.168.0.x` or a local IP assigned then just skip the following connection steps. Network connectivity is going to be used for getting updates and installing additional software. Steps to do this offline manually are out of scope for now.
 
 ### SSH Connection
 
@@ -282,17 +300,15 @@ Port 22 is left alone for a fresh default Pi
 
 Press `Alt+O` to *open* the connection
 
-`-------- SCREENSHOT: PUTTY CONNECTION ----------`
+![Connecting with Putty](images/putty.png)
 
 **Login as:** `pi`
 
 **Password:** `raspberry`
 
-## Customize the Environment
+## Basic Commandline Familiarity
 
-The guides found on google searches will say to traditionally use `sudo raspi-config` and then proceed to explain how to use each menu option. I prefer using a sequence that can be copy and pasted in one move without menus and interacte prompts. If we know what we want out of the computer, then let's tell it directly to go there.
-
-### Basic Commandline Familiarity
+If you're familiar with shells/terminals and Linux then skip this section.
 
 Be careful when pasting and running `sudo` commands from the internet. Also be careful about running foreign scripts.
 
@@ -312,13 +328,15 @@ Pasting text into the terminal from your workstation's clipboard depends on the 
 - Linux might be `Ctrl+Shift+V` to paste, `Ctrl+Shift+C` to copy.
 - Windows using PuTTY is a mouse `right-click` to paste, and selecting with the mouse automatically copies.
 
-New lines get interpreted as a command input, so when pasting scripts from this, the last line will not be sent through until you press enter for it. Spaces are separators for argument lists to modify the default actions of a program.
+New lines get interpreted as a command input. The last line will not be executed when pasted until you press enter. Spaces are separators for argument lists to modify the default actions of a program.
+
+## Customize the Linux Environment
+
+Other guides out there say to use `sudo raspi-config` and proceed to explain how to use each menu option. I prefer using a sequence that can be copy and pasted without menus and interactive prompts. If I know what I want out of the computer, then I want to be able to tell it directly.
 
 ### Locale Change
 
-The Pi starts default with the`en_GB.UTF-8` locale and `UK` keyboard. Here is how to change it for the US `en_US.UTF-8`.
-
-Paste this script and press enter.
+The Pi starts default with the`en_GB.UTF-8` locale and `UK` keyboard. Changing it for the US `en_US.UTF-8`.
 
 ```
 sudo sed -i '/^#/! s/^/# /g' /etc/locale.gen && \
@@ -333,9 +351,7 @@ sudo update-locale en_US.UTF-8
 
 ### Keyboard Layout Change
 
-US 104 or 105 key. Some of the symbols you input will be wrong (pipe `|` for instance) until you change the keyboard. `ssh` can send the keyboard layout for its connected terminal so you may not notice.
-
-Paste this script and press enter
+US 105 key. Some of the symbols you input will be wrong (pipe `|` for instance) until you change the keyboard. `ssh` can send the keyboard layout for its connected terminal so you may not notice.
 
 ```
 KYBD="/etc/default/keyboard"
@@ -347,8 +363,6 @@ sudo sed -i 's/XKBOPTIONS=.*/XKBOPTIONS=""/g' "$KYBD"
 
 ### Hostname Change
 
-Having a unique hostname will make owning multiple networked Pi's less confusing.
-
 Here is a script to randomize it to `zero-1234` something. The change is seen after relogging in.
 
 ```
@@ -358,7 +372,7 @@ sudo sed -i "s/$HOSTNAME/$NEWNAME/" /etc/hosts
 sudo hostname "$NEWNAME" && \
 ```
 
-Confirm the hostname changed with `hostnamectl`.
+Confirm the hostname changed with executing `hostnamectl`.
 
 ### Add Your User
 
@@ -366,7 +380,7 @@ Removing the `pi` user will add some more security and remove the ssh warnings. 
 
 Add your new user with `sudo` permissions. I will call my user on this system `mse`.
 
-If you hit enter through every prompt it keeps the fields empty. You will want a password to have ssh access with it.
+If you hit enter through every prompt the fields are safely left empty. You will want a password to have ssh access.
 
 ```
 NEWUSER="mse"
@@ -377,7 +391,6 @@ sudo usermod -aG sudo "$NEWUSER"
 The user `mse` we made can change or set a password with `sudo passwd mse`.
 
 **Login again:** Terminate the session with `exit`. Log back in as the new user to let you **delete** the `pi` user. This will also updates the hostname from earlier.
-
 
 ### Remove the pi User
 
@@ -398,151 +411,33 @@ sudo rm /etc/motd
 touch ~/.hushlogin
 ```
 
-## Run Updates
+### Run Updates
 
-The Pi will need to be on the network to reach out for updates.
+The Pi will need to be on the network to reach out for updates. If you did not obtain an IP earlier now is the time to troubleshoot.
 
 `sudo apt update -qq && sudo apt-get upgrade -y`
 
 Should that fail, and you're networked, it may be that `/etc/apt/sources` stupidly has the CDROM as the only repo source. I do not think this will happen with the Raspbian images. Remove the `-qq` switches (quiet) for more output to help troubleshoot.
 
-`------------------ End of general setup ------------------`
+# Backup The Image
 
-Scratch notes that need to be sorted into their own documents:
+At this point the Pi is customized and ready to become a project. Now is a good time to do a backup copy of the SD card for a start over point or starting another Pi project.
 
-# Install PWM Control
+I used Win32 Disk Imager on my workstation. It will work for both read and write to swap Pi disk images.
 
-## GPIO Setup
+[Win32 Disk Imager](https://sourceforge.net/projects/win32diskimager/)
 
-```
-sudo gpio_alt -p 13 -f 0
-sudo gpio_alt -p 18 -f 5
-
-Set pin 13 to alternative-function 0
-Set pin 18 to alternative-function 5
-```
-
-# PowerBlock
-
-ATTiny85 microcontroller as a power controller for the RPi.
-
-https://github.com/petrockblog/PowerBlock
-
-https://github.com/vpanarello/RpiPowerController
-
-Set the board as "ATtiny25/45/85", processor as ATtiny85
-Clock as 1MHz and programmer as "Arduino as ISP".
-
-## Install
-
-`wget -O - https://raw.githubusercontent.com/petrockblog/PowerBlock/master/install.sh | sudo bash`
-
-Additional packages installed totals **151 MB**
+Linux and Mac can `dd` the device to a file.
 
 ```
-  build-essential
-  cmake
-  cmake-data
-  doxygen
-  g++-4.9
-  git
-  git-man
-  libarchive13
-  libclang1-3.9
-  liberror-perl
-  libjsoncpp1
-  libllvm3.9
-  liblzo2-2
-  libstdc++-4.9-dev
-  libuv1
+sudo dd if=/dev/disk2 of=~/pi0w_fresh_setup.img
 ```
-
-**statuspin:** Raspberry BCM pin used for status signaling (default: 17) connects to S2 on PowerBlock
-**shutdownpin:** Raspberry BCM pin used for shutdown signaling (default: 18) connects to S1 on Powerblock
-
-PowerBlock driver logging `/var/log/powerblock.log`
-When the driver observes a shutdown signal from the PowerBlock, a shutdown Bash script is called.
-You can find and edit it at `/etc/powerblockswitchoff.sh`
-
-### Need to change the pinout to not stomp on the HW PWM
-sudo sed -i 's/"shutdownpin": 18/"shutdownpin": 27/g' /etc/powerblockconfig.cfg
-
-### Need to change the pinout to not stomp on the HW PWM
-sudo sed -i 's/"shutdownpin": 18/"shutdownpin": 27/g' /etc/powerblockconfig.cfg
-
-### dmesg
-
-```
-2018-10-12 20:38:30.711 INFO  [282] [main@70] Starting PowerBlock driver, version 1.5.0
-2018-10-12 20:38:30.731 INFO  [282] [PowerBlockConfiguration::initialize@57] Shutdown is ACTIVATED
-2018-10-12 20:38:30.732 INFO  [282] [PowerBlockConfiguration::initialize@77] Shutdown Pin is 27
-2018-10-12 20:38:30.732 INFO  [282] [PowerBlockConfiguration::initialize@78] Status Pin is 17
-2018-10-12 20:38:30.745 INFO  [282] [PowerSwitch::setPowerSignal@75] Setting RPi status signal to HIGH
-```
-
-## ATTiny85 Code
-
-`https://github.com/vpanarello/RpiPowerController/blob/master/sketch_nov16a.ino`
-
-
-# Misc
-
-## HDMI Audio Output
-
-`amixer cset numid=3 2`
-
-0 = auto
-1 = analog
-2 = hdmi
-
-
-Optional additional option (incase it is not working)
-`/boot/config.txt`
-`hdmi_drive=2`
-
-
-
-```
-hardware interfaces
-#dtparam=i2c_arm=on
-#dtparam=i2s=on
-#dtparam=spi=on
-```
-
-https://www.raspberrypi.org/documentation/configuration/device-tree.md
-
-Device Trees are usually written in a textual form known as Device Tree Source (DTS) and stored in files with a .dts suffix. DTS syntax is C-like, with braces for grouping and semicolons at the end of each line. Note that DTS requires semicolons after closing braces: think of C structs rather than functions.
-
-
 
 # Appendices
 
 ### SD Card Space
 
 A 4GB Class 10 or UHS-1 card is suitable.
-
-After setup run 
-`df -m /`
-
-results in `1048 MB` or `1.1 GB` of used space for this setup.
-
-vim adds another `30.2 MB`
-
-We could install tlp, but there are a ton of dependencies (56.4 MB).
-      
-`sudo apt-get install tlp`
-
-Nope, that broke my wifi management. Had to start the system over. But it let me practice a cheat sheet and find some bugs in the procedure.
-
-### Battery
-
-Model: LIS1442
-Type: Lion
-Size: 16x44 mm
-Voltage: 3.7V
-Capacity: 490mA
-Space Inside: 22x57 mm with modding
-
 
 ### Memory Card Adapter
 
@@ -569,11 +464,4 @@ What do you really need?
 - Double row of 0.1" header pins maybe (If not a Zero WH model)
 - SD card reader if you don't have any computers with one (it's 2018--how could you!)
 
-You can 3d print a case or get creative.
-
-
-### More Software
-
-`tmux` is only **561 kB**.
-
-running the powercontrol script installs git and stuff. somewhere is a clip file to show the additional space.
+You can 3d print a case or get creative with Lego or something.
