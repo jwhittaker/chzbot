@@ -13,7 +13,7 @@ Here is where the code, libraries, write-ups live! Try at your own risk, as thin
 ## Demo Goals
 
 - [Write-up for starting with a new Raspberry Pi](https://github.com/jwhittaker/chzbot/blob/develop/notes/rpi_setup.md)
-- [Write-up for setting up sound playback with an external audio amp][https://github.com/jwhittaker/chzbot/blob/develop/notes/audio.md]
+- [Write-up for setting up sound playback with an external audio amp](https://github.com/jwhittaker/chzbot/blob/develop/notes/audio.md)
 - [Write-up for installing the pigpio library for GPIO control using C](https://github.com/jwhittaker/chzbot/blob/develop/notes/rpi_pwm.md)
 - [Write-up for installing the Sony PS3 Navigation remote controller with Bluetooth using the sixad library](https://github.com/jwhittaker/chzbot/blob/develop/notes/ps3_btl.md)
 - Write-up for testing the Linux joystick API
