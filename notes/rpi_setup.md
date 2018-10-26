@@ -176,7 +176,7 @@ To break out the USB ports into something usable on the Pi Zero, use something l
 
 #### Option 2: Jumper a USB PCI Bracket
 
-*If you lack an OTG cable* but have spare parts from building computers, you can take a dual USB PCI bracket and jump the pins together using some solid wire or paper clips. Take the [0.1" female USB header](http://pinoutguide.com/Motherboard/usb_2_1_header_pinout.shtml) and connect each pair of the five rows pins together. This links both of the *Female-A* ports to each other. One port is for a *Micro Male-A* cable to let you connect to the Pi Zero, and the other for the *Male-A* end of a USB hub. I have done this myself and it works fine.
+If you have spare parts from building computers, you can take a dual USB PCI bracket and jump the pins together using some solid wire or paper clips. Take the [0.1" female USB header](http://pinoutguide.com/Motherboard/usb_2_1_header_pinout.shtml) and connect each pair of the two rows of jacks together. This links both of the *Female-A* ports to each other. One port is for a *Micro Male-A* cable to let you connect to the Pi Zero, and the other for the *Male-A* end of a USB hub. I have verified this works. Then I ordered the OTG cable to at least have one!
 
 ![Bracket Jumpered](images/bracket_jumper_sm.jpg)
 
@@ -202,9 +202,9 @@ You will need a *male mini-HDMI* (Not micro) to *HDMI (either male or female)* a
 
 #### Analog Composite
 
-If you do not have this adapter, then there is also composite analog TV out on the Pi Zero. A two pin header can be soldered there to wire up a yellow RCA jack. Video output is not necessary with the headless **ssh** setup mentioned earlier.
+There is also composite analog TV out on the Pi Zero. A two pin header can be soldered there to wire up a yellow RCA jack. Video output is not necessary with the *headless* `ssh` setup mentioned earlier.
 
-There is a tutorial for this which can be found on [modmypi.com](https://www.modmypi.com/blog/how-to-add-an-rca-tv-connector-to-a-raspberry-pi-zero)
+Composite video tutorial on [modmypi.com](https://www.modmypi.com/blog/how-to-add-an-rca-tv-connector-to-a-raspberry-pi-zero)
 
 The following can be added to the `boot.txt` file to enable monochrome composite NTSC video out.
 
