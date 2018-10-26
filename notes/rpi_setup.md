@@ -178,7 +178,7 @@ To break out the USB ports into something usable on the Pi Zero, use something l
 
 *If you lack an OTG cable* but have spare parts from building computers, you can take a dual USB PCI bracket and jump the pins together using some solid wire or paper clips. Take the [0.1" female USB header](http://pinoutguide.com/Motherboard/usb_2_1_header_pinout.shtml) and connect each pair of the five rows pins together. This links both of the *Female-A* ports to each other. One port is for a *Micro Male-A* cable to let you connect to the Pi Zero, and the other for the *Male-A* end of a USB hub. I have done this myself and it works fine.
 
-![Bracket Jumpered](images/bracket_jumper.jpg)
+![Bracket Jumpered](images/bracket_jumper_sm.jpg)
 
 #### Option 3: Solder a Spliced Micro Cable
 
@@ -190,7 +190,7 @@ It might be easier than splicing cables, if you desolder the old cable or port, 
 
 The modern adapters are fairly cheap and this takes some work, but you're recycling old components that maybe have not been used for years and even get thrown out today. 
 
-![Building a micro USB Hub](images/hub_build.jpg)
+![Building a micro USB Hub](images/hub_build_sm.jpg)
 
 ### Video Output
 
