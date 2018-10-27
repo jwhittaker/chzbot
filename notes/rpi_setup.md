@@ -252,7 +252,7 @@ An 800 - 2000 mA, 5.0 - 5.2V charger is the ideal choice for powering the setup.
 
 Hard versus soft powering off would be pulling out the USB power versus telling Linux to initiate shutdown. The simple and safe solution is to do: `sudo shutdown now`
 
-Unplugging power without a shutdown sequence can damage your SD card and the environment you have installed! Later in this project we will cover how to handle these concerns while being battery powered. Hint: a microcontroller talking to the Pi's GPIO. Also at the end it will be shown how to back a backup image of the configured Pi on your workstation.
+Unplugging power without a shutdown sequence can damage your SD card and the environment you have installed! Later in this project we will cover how to handle these concerns while being battery powered. Hint: a microcontroller talking to the Pi's GPIO. Also at the end  you will be shown how to make a backup image of all this.
 
 ## Login to the Pi
 
