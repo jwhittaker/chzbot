@@ -298,7 +298,7 @@ If you do not see a `192.168.0.x` or a local IP assigned then just skip the foll
 
 **Windows** will need a terminal program which supports ssh, such as [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html).
 
-**Mac & Linux** should have ssh already available from the terminal. If not, install it. Or it is time to get a better Linux distro, such as (Mint)[https://linuxmint.com/download.php]. `sudo apt-get install ssh`
+**Mac & Linux** should have ssh already available from the terminal. If not, install it. Hopefully not, but here: `sudo apt-get install ssh`
 
 #### Linux and Mac Terminal
 
