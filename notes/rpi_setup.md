@@ -453,11 +453,11 @@ sudo dd if=/dev/disk2 of=~/pi0w_fresh_setup.img
 
 # Appendices
 
-### SD Card Space
+## SD Card Space
 
 A 4GB Class 10 or UHS-1 card is suitable.
 
-### Memory Card Adapter
+## Memory Card Adapter
 
 [Kingston FCR-HS4 Memory card reader](https://www.amazon.com/dp/B00VAGX6MW)
 
@@ -467,7 +467,7 @@ Here is an image backing up the microSD card the RPI was using. These are 16GB U
 
 ![SD card speed](images/sd_reader_speed.png)
 
-### Pi Zero W Kit Pricing
+## Pi Zero W Kit Pricing
 
 [$14 Pi Zero WH with header soldered](https://www.adafruit.com/product/3708)
 [$34.50 for the starter pack on adafruit](https://www.adafruit.com/product/3410)
@@ -482,4 +482,17 @@ What do you really need?
 - Double row of 0.1" header pins maybe (If not a Zero WH model)
 - SD card reader if you don't have any computers with one (it's 2018--how could you!)
 
+## Pi Case
+
 You can 3d print a case or get creative with Lego or something.
+
+# Image Credits
+
+Images not photographed by myself:
+
+```
+1. rpi_zero_w.jpg - raspberrypi.org products raspberry-pi-zero-w
+2. usbnic.jpg - Amazon B00BBD7NFU Cable Matters FBA_202013-BLACK
+3. otgcable.jpg - DHgate 405074553 Wholesale Mobile Phone MP4 Micro USB
+4. mini_hdmi_adapter.jpg - Amazon B071DCQ7CP GE HDMI Cable Kit JAS33584
+```
