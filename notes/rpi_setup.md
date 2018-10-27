@@ -1,37 +1,47 @@
 # Setting Up A Raspberry Pi
 
-This demo was performed with the following hardware and kernel:
+*Last Updated October 2018*
+
+Here is how you can setup a Pi **Zero W** with [Debian 9](https://www.debian.org/) to have it automatically connect to your home Wifi on its first boot up. Then it will be configured headlessly over `ssh` with commands and scripts written in this document.
+
+This demonstration was performed with the following hardware and kernel:
 
 **Hardware Model:** Zero W V1.1
 
 ![Raspberry Pi Zero W](images/rpi_zero_w.jpg)
 
+This guide was written is using **Raspbian Stretch Lite** which is based on **Debian 9**.
+
 **Linux Kernel:** `Linux raspberrypi 4.14.70+ #1144 Tue Sep 18 17:20:50 BST 2018 armv6l GNU/Linux`
 
-**Workstation:** Windows 7 64-bit PC running PuTTY.
+**Workstation:** Windows 7 64-bit PC running PuTTY for ssh connection.
 
 ## Prepare a microSD card image
+
+The micro sized SD card will be the RPi computer's "hard drive". It is non-volatile storage to boot from, install software, and save your files. The RPi is capable of about 30 MB/s maximum read and write speeds if the card is rated for it. `8 GB` is probably the most convenient size to purchase these days for a class 10 or UHS-1 rated card.
+
+### Obtain the OS Image
 
 [Download a Raspbian image](https://www.raspberrypi.org/downloads/raspbian/)
 
 ![Raspbian Lite Download](images/raspbian_lite_dl.png)
-
-This guide was written is using **Raspbian Stretch Lite** which is based on **Debian 9**.
 
 ```
 Release date: 2018-06-27
 Kernel version: 4.14.50+
 ```
 
-Raspbian Lite was chosen because we do not need a UI to interact through and it would be extra software taking memory and CPU cycles (and thus decrease battery runtimes).
+Raspbian Lite was chosen because we do not need a UI and it would be extra software taking memory and CPU cycles (and thus decrease battery runtimes).
 
 Download the `.zip` and unzip the Raspbian `.img`.
 
-There are many alternatives, but we install [etcher](https://etcher.io/) to flash the `.img` to the the card. Etcher runs on most operating systems and is simple to use. If it is the only card and flash drive inserted, etcher will automatically choose it.
+### Flash with Etcher
+
+There are many alternatives, but we install [etcher](https://etcher.io/) to flash the `.img` to the the card. Etcher runs on most operating systems and is simple to use. If this is the only card inserted, etcher will automatically choose it.
 
 ![Flash using etcher](images/etcher_flash.png)
 
-### Alternatives
+### Linux and Mac Alternatives to Etcher
 
 Linux and Mac OS X do not need extra software to create a bootable SD card from an `.img`
 
@@ -45,8 +55,6 @@ diskutil list
 
 **Debian-based Linux**
 
-There are many ways to find a storage device. Keep these commands handy for later when it comes time to mount the SD card boot filesystem on your workstation.
-
 ```
 lsblk
 sudo fdisk -l
@@ -55,7 +63,7 @@ ls -l /dev/sd*
 sudo dmesg | tail
 ```
 
-It might look something like `/dev/sdc`. Numbers at the end indicate filesystems, not the device itself. The `.img` file includes file system information in it, so a `dd` command is pointed at the device.
+It might look something like `/dev/sdc`. Numbers at the end indicate filesystems, not the device itself. Look at the sizes of the devices. A small 8 GB one will be the SD card. The `.img` file includes file system information in it, so a `dd` command is pointed at the device.
 
 #### Write the image to the SD card
 
@@ -67,11 +75,17 @@ If `/dev/disk2` (Mac) happens to be your SD card device and the image was saved 
 sudo dd if=~/Downloads/2018-06-27-raspbian-stretch-lite.img of=/dev/disk2
 ```
 
+### Windows Alternatives to Etcher
+
+- Win32 USB Imager
+- Rufus
+- Universal USB Installer
+
 ## Headless Shortcuts
 
-It would be more convenient to have `ssh` access from the beginning. This keeps you from having to initially buy a bunch of dongles or be hunched over a spare keyboard and monitor with no convenient way to paste commands from this procedure.
+It would be more convenient to have `ssh` access from the beginning. This keeps you from having to initially buy a bunch of dongles or be hunched over a spare keyboard and monitor with no convenient way to paste commands from this procedure. Following and suceeding with this section will allow you to optionally skip the **Attaching Peripherals** section and proceed directly to **Connect Power**.
 
-### auto-enable ssh server
+### Auto-enable ssh server
 
 Placing an empty file named `ssh` on the `/boot` partition (top level) of the SD card is a Pi boot feature that will let the system know to enable the ssh server and allow connections for the default `pi` user.
 
@@ -127,21 +141,21 @@ network={
 }
 ```
 
+It might be good to save this (without the password filled in) config file along side other local files for this project.
+
 ![Files on card](images/verify_files.png)
 
 A USB [NIC](https://en.wikipedia.org/wiki/Network_interface_controller) that's confirmed compatible with Linux should auto-setup with [DHCP](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol) and be on the network. I did not have to do anything extra for this to succeed.
 
 ![USB NIC](images/usbnic.jpg)
 
-`-------- DEVICE INFO TERMINAL DUMP OF MY NIC ---------`
+### Finding the Pi IP Address
 
 [ARP](https://en.wikipedia.org/wiki/Address_Resolution_Protocol) your network beforehand, so you can compare the difference and see what IP gets added after the Pi has booted up. Or you can log into your router and look at the DHCP client leases table.
 
 Windows, Linux, and Mac should all be able to run `arp -a` in the terminal or cmd. Do that now and keep the window open or copy/screenshot to a note.
 
-`-------- SCREENSHOT: mac/linux arp -a result ----------`
-
-**Linux Placeholder**
+#### Linux Arp Table Example
 
 ```
 ? (172.17.0.2) at 02:42:ac:11:00:02 [ether] on docker0
@@ -150,7 +164,7 @@ Windows, Linux, and Mac should all be able to run `arp -a` in the terminal or cm
 ? (172.52.45.161) at 50:87:89:a2:5a:59 [ether] on eth2
 ```
 
-**Mac OS X Placeholder**
+#### Mac OS X Arp Table Example
 
 ```
 ? (192.168.0.1) at b0:4e:26:55:48:66 on en9 ifscope [ethernet]
@@ -160,7 +174,7 @@ Windows, Linux, and Mac should all be able to run `arp -a` in the terminal or cm
 ? (239.255.255.250) at 1:0:5e:7f:ff:fa on en9 ifscope permanent [ethernet]
 ```
 
-## Attach Peripherals (if not using ssh)
+## Optional: Attaching Peripherals
 
 **Skip this section if you're following along with headless ssh.**
 
@@ -217,20 +231,28 @@ sdtv_aspect=1
 sdtv_disable_colourburst=1
 ```
 
-### Connect Power
+### Peripheral Checklist
 
-An 800 - 2000 mA, 5.0 - 5.2V charger is the ideal choice for powering the setup. A computer USB port is limited to 500mA--it *works* for testing, but results may vary. As the Raspberry Pi has no power switch, power is connected last.
-
-#### Peripheral Checklist
-
-You only need the SD card if you are doing this headless over pre-configured wireless!
+Headless setups pre-configured with wireless do not need these dongles--only the SD card!
 
 - microSD card flashed and inserted
 - USB adapted
 - USB keyboard connected
 - USB NIC connected and ethernet connected to a network switch
 
-It's ready for power on!
+It is ready for power!
+
+## Connect Power
+
+Skip over to here from setting up `boot.txt` ssh and Wifi.
+
+An 800 - 2000 mA, 5.0 - 5.2V charger is the ideal choice for powering the setup. A computer USB port is limited to 500mA--it *works* for testing, but results may vary. As the Raspberry Pi has no power switch, power is connected last.
+
+### Ensure to Always Shutdown Safely
+
+Hard versus soft powering off would be pulling out the USB power versus telling Linux to initiate shutdown. The simple and safe solution is to do: `sudo shutdown now`
+
+Unplugging power without a shutdown sequence can damage your SD card and the environment you have installed! Later in this project we will cover how to handle these concerns while being battery powered. Hint: a microcontroller talking to the Pi's GPIO. Also at the end it will be shown how to back a backup image of the configured Pi on your workstation.
 
 ## Login to the Pi
 
@@ -242,13 +264,13 @@ Wait a couple of minutes after first power on. Run `arp -a` again on your workst
 
 I left the window open to run arp again after the Pi booted.
 
-Or check your router's web UI config. Because I did both ethernet and Wifi to write this, my router shows `raspberrypi` host IPs for both LAN and Wifi in the client table.
+Or check your router's web UI config. (Usually the 192.168.0.1 login screen from your web browser) Your router config portal should show a `raspberrypi` host and its IP under `DHCP client leases table` or some labeling to that effect.
 
-There are also tools like `nmap` and `Angry IP Scanner` to scan your subnet. But at this point if you're not seeing any new IPs then it is probably the Pi that's unable to connect. You might need to double check `boot.txt` with your Wifi settings or follow the steps of connecting a keyboard and monitor (section **Attach Peripherals**).
+There are also tools like `nmap` and `Angry IP Scanner` to scan your subnet. But at this point if you're not seeing any new IPs then it is probably the Pi that's unable to connect. You might need to double check the `boot.txt` with your Wifi settings or follow the steps of connecting a keyboard and monitor (section **Attach Peripherals**). The `boot.txt` file may have cleaned itself up this point if you go back to check it.
 
-### Still No IP?
+### Troubleshooting: Still No IP?
 
-With all of the peripherals connected, physically at the Pi login prompt you will have:
+With all of the peripherals connected as per the **Attaching Peripherals** section, physically sitting at the Pi monitor you will have the login prompt:
 
 **Login as:** `pi`
 
@@ -261,7 +283,7 @@ Check and see if you have an IP address. Here is an example with ethernet showin
 ```
 $ ifconfig
 eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet 192.168.1.121  netmask 255.255.255.0  broadcast 192.168.1.255
+        inet 192.168.0.6  netmask 255.255.255.0  broadcast 192.168.0.255
         inet6 fe80::92aa:2b5d:fd0b:7deb  prefixlen 64  scopeid 0x20<link>
         ether b8:27:eb:23:9e:7b  txqueuelen 1000  (Ethernet)
         RX packets 120666  bytes 71154276 (67.8 MiB)
@@ -280,7 +302,7 @@ If you do not see a `192.168.0.x` or a local IP assigned then just skip the foll
 
 #### Linux and Mac Terminal
 
-`ssh pi@192.168.0.6` or whatever your IP turned out to be.
+Open your terminal program and input `ssh pi@192.168.0.6` or whatever your IP turned out to be. `pi` is the valid user name setup by default on the stock OS image. We will get to showing how to change the user name soon.
 
 `-------- SCREENSHOT: OPEN TERMINAL ON MAC OR UBUNTU ----------`
 
@@ -290,15 +312,11 @@ If you do not see a `192.168.0.x` or a local IP assigned then just skip the foll
 
 You can avoid the mouse even though it's a GUI program! Look at the underlined letters.
 
-Press `Alt+S` to radio toggle SSH
-
-Press `Alt+N` to activate the host name field
-
-Type in the IP here
-
-Port 22 is left alone for a fresh default Pi
-
-Press `Alt+O` to *open* the connection
+- Press `Alt+S` to radio toggle SSH
+- Press `Alt+N` to activate the host name field
+- Type in the IP here
+- Port 22 is left alone for a fresh default Pi
+- Press `Alt+O` to *open* the connection
 
 ![Connecting with Putty](images/putty.png)
 
@@ -306,7 +324,7 @@ Press `Alt+O` to *open* the connection
 
 **Password:** `raspberry`
 
-## Basic Commandline Familiarity
+## Tips: Basic Commandline Familiarity
 
 If you're familiar with shells/terminals and Linux then skip this section.
 
@@ -332,7 +350,7 @@ New lines get interpreted as a command input. The last line will not be executed
 
 ## Customize the Linux Environment
 
-Other guides out there say to use `sudo raspi-config` and proceed to explain how to use each menu option. I prefer using a sequence that can be copy and pasted without menus and interactive prompts. If I know what I want out of the computer, then I want to be able to tell it directly.
+Other guides out there say to use `sudo raspi-config` and proceed to explain how to use each menu option. That can certainly be done here instead. I prefer using a sequence that can be copy and pasted without menus and interactive prompts. If I know what I want out of the computer, then I want to be able to tell it directly. These will go in as part of the whole "cheatsheet".
 
 ### Locale Change
 
@@ -351,7 +369,7 @@ sudo update-locale en_US.UTF-8
 
 ### Keyboard Layout Change
 
-US 105 key. Some of the symbols you input will be wrong (pipe `|` for instance) until you change the keyboard. `ssh` can send the keyboard layout for its connected terminal so you may not notice.
+I use US 105 key. Some of the symbols you input will be wrong (pipe `|` for instance) until you change the keyboard. `ssh` can send the keyboard layout for its connected terminal so you may not notice this behavior. It is still good to have the correct options set.
 
 ```
 KYBD="/etc/default/keyboard"
@@ -363,7 +381,7 @@ sudo sed -i 's/XKBOPTIONS=.*/XKBOPTIONS=""/g' "$KYBD"
 
 ### Hostname Change
 
-Here is a script to randomize it to `zero-1234` something. The change is seen after relogging in.
+Here is a script to randomize it to `zero-1234` something. `NEWNAME` is a variable so you can change the `zero-$RANDOM` to your own hostname like `mousedroid` and the script will still work. The change is seen after relogging in--which will be done after making a new user.
 
 ```
 NEWNAME=zero-$RANDOM && \
@@ -376,11 +394,11 @@ Confirm the hostname changed with executing `hostnamectl`.
 
 ### Add Your User
 
-Removing the `pi` user will add some more security and remove the ssh warnings. First a replacement user must be created.
+Removing the `pi` user will add some more security and remove the ssh warnings you are seeing. A replacement user must be created first.
 
-Add your new user with `sudo` permissions. I will call my user on this system `mse`.
+I will call my user on this system `mse`.
 
-If you hit enter through every prompt the fields are safely left empty. You will want a password to have ssh access.
+If you hit enter through every prompt the fields are safely left empty. You will want a password to have ssh access. Also you want `sudo` privilege to be able to remove `pi` user.
 
 ```
 NEWUSER="mse"
@@ -419,15 +437,15 @@ The Pi will need to be on the network to reach out for updates. If you did not o
 
 Should that fail, and you're networked, it may be that `/etc/apt/sources` stupidly has the CDROM as the only repo source. I do not think this will happen with the Raspbian images. Remove the `-qq` switches (quiet) for more output to help troubleshoot.
 
-# Backup The Image
+## Backup The Image
 
 At this point the Pi is customized and ready to become a project. Now is a good time to do a backup copy of the SD card for a start over point or starting another Pi project.
 
-I used Win32 Disk Imager on my workstation. It will work for both read and write to swap Pi disk images.
+I used Win32 Disk Imager on my Windows 7 workstation. It will work for both read and write to swap Pi disk images.
 
 [Win32 Disk Imager](https://sourceforge.net/projects/win32diskimager/)
 
-Linux and Mac can `dd` the device to a file.
+Linux and Mac can `dd` the SD card device to a file to do the same thing.
 
 ```
 sudo dd if=/dev/disk2 of=~/pi0w_fresh_setup.img
