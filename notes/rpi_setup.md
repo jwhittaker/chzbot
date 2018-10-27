@@ -2,7 +2,7 @@
 
 *Last Updated October 2018*
 
-Here is how you can setup a Pi **Zero W** with [Debian 9](https://www.debian.org/) to have it automatically connect to your home Wifi on its first boot up. Then it will be configured headlessly over `ssh` with commands and scripts written in this document.
+Here is how you can setup a Pi **Zero W** with Raspbian Linux to have it automatically connect to your home Wifi on its first boot up. Then it will be configured headlessly over `ssh` with commands and scripts written in this document.
 
 This demonstration was performed with the following hardware and kernel:
 
