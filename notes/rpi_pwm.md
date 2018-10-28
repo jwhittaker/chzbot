@@ -40,9 +40,9 @@ Frequencies above 30 MHz are unlikely to work.
 
 These I/O expanders take commands over the I2C bus to control actual PWM hardware. This solution is much more precise and reliable than software loop timers but it costs more to add hardware to the project. A good middle ground is the Arduino Pro Mini. It is small, inexpensive, programmable, and has 6 analog (PWM) inputs (10-bit ADC) and 6 analog outputs (10-bit DAC).
 
-[Adafruit PWM Driver PCA96855](http://www.adafruit.com/products/815)
-[SparkFun PWM Shield TLC5940](https://www.sparkfun.com/products/10615)
-[Arduino Pro Mini ATMega328](https://store.arduino.cc/usa/arduino-pro-mini)
+- [Adafruit PWM Driver PCA96855](http://www.adafruit.com/products/815)
+- [SparkFun PWM Shield TLC5940](https://www.sparkfun.com/products/10615)
+- [Arduino Pro Mini ATMega328](https://store.arduino.cc/usa/arduino-pro-mini)
 
 ## RPi PWM Interfacing with pigpio
 
@@ -83,14 +83,23 @@ The 'duty cycle' is the ratio of PWM data to PWM range expressed as a percentage
 To calculate your required frequency, pick a clock divisor that make sense for your application - I chose 16, which equates to 1.2 MHz. 
 
 (1.2 MHz / 440 Hz)
+
 `const A4_RANGE = 1.2e6 / 440;`
+
 (2727.27 / 2 ) = 1363.636
+
 `A4Data = A4_RANGE / 2;`
+
 (1.2 MHz / 370 Hz)
+
 `const F4S_RANGE = 1.2e6 / 370;`
+
 `F4SData = F4S_RANGE / 2;`
+
 (1.2 MHz / 277 Hz)
+
 `const C4S_RANGE = 1.2e6 / 277;`
+
 `C4SData = C4S_RANGE / 2;`
 
 If you wanted to drive a servo at say `50Hz` the same range calculation holds true:
@@ -173,6 +182,7 @@ gpioSetPWMrange(24, 2000); // Now 2000 is fully on
 ```
 
 The actual number of steps beween off and fully on is the integral part of `250M/PWMfreq`
+
 The actual frequency set is 250 million / steps.
 
 There will only be a million steps for a PWMfreq of 250. Lower frequencies will have more steps and higher frequencies will have fewer steps. PWMduty is automatically scaled to take this into account.
@@ -180,7 +190,6 @@ There will only be a million steps for a PWMfreq of 250. Lower frequencies will 
 So if we want a freq of 100kHz (10us) or 1 MHz (1us)
 we get 2500 steps or with 1MHz 250 steps.
 
-Credits
 The PWM and servo pulses are timed using the DMA and PWM peripherals. 
 This use was inspired by Richard Hirst's servoblaster kernel module. 
 See https://github.com/richardghirst/PiBits/tree/master/ServoBlaster
@@ -293,12 +302,12 @@ The frequencies for each sample rate are:
 - [Reading PWM Signals from An RC Receiver with Arduino](http://www.camelsoftware.com/2015/12/25/reading-pwm-signals-from-an-rc-receiver-with-arduino/)
 
 Hardware interrupts
-`attachInterrupt()`
-`micros()` on `Timer2_Counter Library`
+- `attachInterrupt()`
+- `micros()` on `Timer2_Counter Library`
 
 - [Timer2](https://github.com/ElectricRCAircraftGuy/eRCaGuy_TimerCounter)
 - [Timer2 blog](https://www.electricrcaircraftguy.com/2014/02/Timer2Counter-more-precise-Arduino-micros-function.html)
-Is there a fork of this somewhere that doesn't use 8 different font sizes, warnings about not working, and one commit branch?
+- Is there a fork of this somewhere that doesn't use 8 different font sizes, warnings about not working, and one commit branch?
 
 ```
 #define CHANNEL_1 34
@@ -348,9 +357,9 @@ Compare 500 to 2500μs pulse widths with DACs.
 
 500μs = 0.5ms
 
-**-  8-bit** - only good for about `100μs` steps
-**- 10-bit** - 4x the resolution of 8-bit, good for about `25μs` steps
-**- 12-bit** - 8x the resolution of 8-bit, good for about `5μs` steps
+-  **8-bit** - only good for about `100μs` steps
+- **10-bit** - 4x the resolution of 8-bit, good for about `25μs` steps
+- **12-bit** - 8x the resolution of 8-bit, good for about `5μs` steps
 
 Any more precision and you will be dealing with signal transmission noise & jitter.
 
