@@ -1,6 +1,6 @@
 # Setting Up A Raspberry Pi
 
-*Last Updated October 2018*
+*Last Updated April 2019*
 
 Here is how you can setup a Pi **Zero W** with Raspbian Linux to have it automatically connect to your home Wifi on its first boot up. Then it will be configured headlessly over `ssh` with commands and scripts written in this document.
 
@@ -65,9 +65,25 @@ sudo dmesg | tail
 
 It might look something like `/dev/sdc`. Numbers at the end indicate filesystems, not the device itself. Look at the sizes of the devices. A small 8 GB one will be the SD card. The `.img` file includes file system information in it, so a `dd` command is pointed at the device.
 
+#### Unmount the storage volume
+
+Chances are a Linux distro or Mac OS X may have already mounted the card if it happened to have a file system on it. Run the unmount command first, so that `dd` may proceed safely to image the card.
+
+**Mac OS X Unmount Example**
+
+```
+sudo umount /dev/disk2
+```
+
+**Linux Unmount Example**
+
+```
+sudo umount /dev/sdc
+```
+
 #### Write the image to the SD card
 
-If `/dev/disk2` (Mac) happens to be your SD card device and the image was saved in the Downloads dir or your home, then you can use this `dd` command to write it there.
+If `/dev/disk2` (Mac) happens to be your SD card device and the image was saved in the Downloads dir or your home, then you can use the `dd` command to write it there.
 
 **Be wary of pasting sudo AND dd commands you see on the internet! You can potentially ruin your workstation.**
 
