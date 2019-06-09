@@ -1,6 +1,6 @@
 # Setting Up A Raspberry Pi
 
-*Last Updated April 2019*
+*Last Updated June 2019*
 
 Here is how you can setup a Pi **Zero W** with Raspbian Linux to have it automatically connect to your home Wifi on its first boot up. Then it will be configured headlessly over `ssh` with commands and scripts written in this document.
 
@@ -278,7 +278,7 @@ Wait a couple of minutes after first power on. Run `arp -a` again on your workst
 
 ![ARP result before and after](images/arp.png)
 
-I left the window open to run arp again after the Pi booted.
+If the Pi is on the built-in ethernet port, it can also be recognized by its MAC address. Referencing the [MAC Addr OUI List](http://standards-oui.ieee.org/oui.txt) the *Physical Address* will start with hex numbers `B8-27-EB-` or `DC-A6-32-`. (I have not tested Wifi's Mac yet).
 
 Or check your router's web UI config. (Usually the 192.168.0.1 login screen from your web browser) Your router config portal should show a `raspberrypi` host and its IP under `DHCP client leases table` or some labeling to that effect.
 
